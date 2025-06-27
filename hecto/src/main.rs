@@ -9,7 +9,8 @@
 
 mod editor;
 mod errors;
-pub mod terminal;
+mod terminal;
+mod view;
 
 use crate::editor::Editor;
 

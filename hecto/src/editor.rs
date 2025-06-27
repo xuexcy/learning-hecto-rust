@@ -11,14 +11,7 @@ use crate::errors::IoError;
 use crate::terminal::Position;
 use crate::terminal::Size;
 use crate::terminal::Terminal;
-
-const WELCOME_MESSAGE: &'static str = concat!(
-    "Name: ",
-    env!("CARGO_PKG_NAME"),
-    " , Version: ",
-    env!("CARGO_PKG_VERSION")
-);
-const WELCOME_MESSAGE_LEN: usize = WELCOME_MESSAGE.len();
+use crate::view::View;
 
 //  ------> x
 // |
@@ -125,7 +118,7 @@ impl Editor {
             Terminal::clear_screen()?;
             Terminal::print("Goodbye.\r\n")?;
         } else {
-            self.draw_rows()?;
+            View::render()?;
             Terminal::move_caret_to(Position {
                 col: self.location.x,
                 row: self.location.y,
@@ -133,34 +126,6 @@ impl Editor {
         }
         Terminal::show_caret()?;
         Terminal::execute()?;
-        return Ok(());
-    }
-    fn draw_rows(&self) -> IoError {
-        let height = Terminal::size()?.height;
-        for current_row in 0..height {
-            Terminal::clear_line()?;
-            if current_row == height / 3 {
-                Self::draw_welcome_message()?;
-            } else {
-                Self::draw_empty_row()?;
-            }
-            if current_row + 1 < height {
-                Terminal::print("\r\n")?;
-            }
-        }
-        return Ok(());
-    }
-    fn draw_welcome_message() -> IoError {
-        let width = Terminal::size()?.width as usize;
-        let padding = (width - WELCOME_MESSAGE_LEN) / 2;
-        let space = " ".repeat(padding - 1);
-        let mut welcome_message = format!("~{space}{WELCOME_MESSAGE}");
-        welcome_message.truncate(width);
-        Terminal::print(&welcome_message)?;
-        return Ok(());
-    }
-    fn draw_empty_row() -> IoError {
-        Terminal::print("~")?;
         return Ok(());
     }
 }
